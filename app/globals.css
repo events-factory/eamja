@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary-50: #fdeeed;
+  --color-primary-100: #fad6d3;
+  --color-primary-200: #f2a9a3;
+  --color-primary-500: #C61B11;
+  --color-primary-600: #A9150C;
+  --color-primary-700: #8E1008;
+}
+
+/* Palette taken from the EAMJA crest: the red ring, the sky-blue field
+   behind the scales of justice, and the black name banner. */
+:root {
+  --red:    #C61B11;
+  --red2:   #8E1008;
+  --sky:    #5BB9D2;
+  --sky2:   #2E93B0;
+  --ink:    #14181D;
+  --light:  #F5F8FB;
+  --white:  #FFFFFF;
+  --text:   #23303A;
+  --muted:  #6B7A85;
+  --border: #DDE6EC;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-open-sans), sans-serif;
+  color: var(--text);
+  background: var(--white);
+  font-size: 15px;
+  line-height: 1.7;
+}
