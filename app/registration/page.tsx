@@ -742,75 +742,85 @@ export default function RegistrationPage() {
   }
 
   const header = (
-    <div
+    <header
       style={{
-        background: 'linear-gradient(135deg, var(--ink) 0%, var(--red2) 100%)',
-        padding: '48px 24px 56px',
+        background: 'var(--white)',
+        borderBottom: '1px solid var(--border)',
       }}
     >
-      <div style={{ maxWidth: 1160, margin: '0 auto' }}>
-        <div className="flex items-center gap-4 mb-8">
-          <span className="bg-white rounded-full p-1 shrink-0 shadow-lg">
-            <Image
-              src="/eamja-logo.png"
-              alt="EAMJA"
-              width={56}
-              height={56}
-              priority
-              className="rounded-full"
-            />
-          </span>
+      <div style={{ maxWidth: 1160, margin: '0 auto', padding: '0 24px' }}>
+        <div
+          className="flex items-center gap-3 py-4"
+          style={{ borderBottom: '1px solid var(--border)' }}
+        >
+          <Image
+            src="/eamja-logo.png"
+            alt="EAMJA"
+            width={40}
+            height={40}
+            priority
+            className="rounded-full shrink-0"
+          />
           <span
-            className="text-white font-semibold leading-tight"
+            className="leading-tight"
             style={{ fontFamily: 'var(--font-poppins),sans-serif' }}
           >
-            EAMJA
+            <span
+              className="block text-sm font-semibold tracking-wide"
+              style={{ color: 'var(--ink)' }}
+            >
+              EAMJA
+            </span>
             <span
               className="block text-xs font-normal"
-              style={{ color: 'rgba(255,255,255,0.7)' }}
+              style={{ color: 'var(--muted)' }}
             >
               East African Magistrates&apos; and Judges&apos; Association
             </span>
           </span>
         </div>
-        <p
-          style={{
-            fontFamily: 'var(--font-poppins),sans-serif',
-            fontSize: 11,
-            letterSpacing: 3,
-            textTransform: 'uppercase',
-            color: 'var(--sky)',
-            fontWeight: 700,
-            marginBottom: 12,
-          }}
-        >
-          Conference Registration
-        </p>
-        <h1
-          style={{
-            fontFamily: 'var(--font-poppins),sans-serif',
-            fontSize: 'clamp(28px,4vw,44px)',
-            fontWeight: 800,
-            color: 'var(--white)',
-            lineHeight: 1.2,
-            maxWidth: 700,
-          }}
-        >
-          Register to attend
-        </h1>
-        <p
-          style={{
-            color: 'rgba(255,255,255,0.75)',
-            marginTop: 12,
-            fontSize: 16,
-            maxWidth: 600,
-          }}
-        >
-          Choose your delegate category, complete your details and confirm your
-          place.
-        </p>
+
+        <div style={{ padding: '56px 0 52px' }}>
+          <p
+            style={{
+              fontFamily: 'var(--font-poppins),sans-serif',
+              fontSize: 11,
+              letterSpacing: 2.4,
+              textTransform: 'uppercase',
+              color: 'var(--red)',
+              fontWeight: 600,
+              marginBottom: 14,
+            }}
+          >
+            Conference Registration
+          </p>
+          <h1
+            style={{
+              fontFamily: 'var(--font-poppins),sans-serif',
+              fontSize: 'clamp(30px,4.4vw,46px)',
+              fontWeight: 700,
+              color: 'var(--ink)',
+              lineHeight: 1.12,
+              letterSpacing: '-0.02em',
+              maxWidth: 700,
+            }}
+          >
+            Register to attend
+          </h1>
+          <p
+            style={{
+              color: 'var(--muted)',
+              marginTop: 14,
+              fontSize: 16,
+              maxWidth: 560,
+            }}
+          >
+            Choose your delegate category, complete your details and confirm
+            your place.
+          </p>
+        </div>
       </div>
-    </div>
+    </header>
   );
 
   if (submitted) {
@@ -821,7 +831,7 @@ export default function RegistrationPage() {
       >
         {header}
         <div className="flex-1 flex items-start justify-center px-4 py-12">
-          <div className="bg-white rounded-xl shadow-lg p-8 text-center max-w-lg w-full">
+          <div className="panel p-8 text-center max-w-lg w-full">
             <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <svg
                 className="w-10 h-10 text-green-600"
@@ -927,7 +937,7 @@ export default function RegistrationPage() {
         }}
       >
         {loading ? (
-          <div className="bg-white rounded-xl shadow p-8 text-center">
+          <div className="panel p-10 text-center">
             <div
               className="animate-spin w-12 h-12 border-4 rounded-full mx-auto mb-4"
               style={{
@@ -938,19 +948,18 @@ export default function RegistrationPage() {
             <p style={{ color: 'var(--muted)' }}>Loading…</p>
           </div>
         ) : error ? (
-          <div className="bg-white rounded-xl shadow p-8 text-center">
+          <div className="panel p-10 text-center">
             <p className="text-red-600 mb-4">{error}</p>
             <button
               onClick={loadRegistrationPage}
-              className="px-6 py-2 rounded-lg text-white font-semibold"
-              style={{ background: 'var(--red)' }}
+              className="btn-primary px-6 py-2.5 rounded-lg text-white text-sm font-semibold"
             >
               Try again
             </button>
           </div>
         ) : eventType === 'HYBRID' && !attendanceType ? (
           /* Attendance type */
-          <div className="bg-white rounded-xl shadow p-8">
+          <div className="panel p-8">
             <h2
               className="text-xl font-semibold text-center mb-6"
               style={{
@@ -965,7 +974,7 @@ export default function RegistrationPage() {
                 <button
                   key={type}
                   onClick={() => selectAttendance(type)}
-                  className="p-6 border-2 rounded-xl hover:shadow-lg transition-all text-center"
+                  className="cat-card p-6 border rounded-2xl text-center"
                   style={{ borderColor: 'var(--border)' }}
                 >
                   <div
@@ -1024,8 +1033,8 @@ export default function RegistrationPage() {
           </div>
         ) : !selectedCategory ? (
           /* Category selection */
-          <div className="bg-white rounded-xl shadow p-8">
-            <div className="flex items-center justify-between mb-4 gap-4">
+          <div>
+            <div className="flex items-center justify-between mb-5 gap-4">
               <h2
                 className="text-xl font-semibold"
                 style={{
@@ -1063,64 +1072,67 @@ export default function RegistrationPage() {
                   return (
                     <div
                       key={category.id}
-                      className="border-2 rounded-xl p-6 hover:shadow-lg transition-all relative overflow-hidden flex flex-col h-full"
-                      style={{ borderColor: 'var(--border)' }}
+                      className="cat-card rounded-2xl border p-6 flex flex-col h-full"
+                      style={{
+                        borderColor: 'var(--border)',
+                        background: 'var(--white)',
+                      }}
                     >
-                      {isFree && (
-                        <div
-                          className="absolute top-0 right-0 text-white text-xs font-bold px-3 py-1 rounded-bl-lg"
-                          style={{ background: '#16a34a' }}
+                      <div className="flex items-start justify-between gap-3">
+                        <h3
+                          className="text-base font-semibold leading-snug"
+                          style={{
+                            color: 'var(--ink)',
+                            fontFamily: 'var(--font-poppins),sans-serif',
+                          }}
                         >
-                          FREE
-                        </div>
-                      )}
-                      <h3
-                        className="text-lg font-semibold mb-2 min-h-14 pr-12"
-                        style={{
-                          color: 'var(--ink)',
-                          fontFamily: 'var(--font-poppins),sans-serif',
-                        }}
-                      >
-                        {decodeHtml(category.name_english)}
-                      </h3>
-                      <p
-                        className="text-2xl font-bold mb-3 flex items-baseline gap-2 flex-wrap"
-                        style={{ color: isFree ? '#16a34a' : 'var(--red)' }}
-                      >
-                        <span>{category.fee}</span>
-                        {discountedFrom && (
+                          {decodeHtml(category.name_english)}
+                        </h3>
+                        {isFree && (
                           <span
-                            className="text-base font-semibold line-through"
-                            style={{ color: 'var(--muted)' }}
+                            className="shrink-0 text-[11px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full"
+                            style={{
+                              color: '#15803D',
+                              background: 'rgba(22,163,74,0.10)',
+                            }}
                           >
-                            {discountedFrom}
+                            Free
                           </span>
                         )}
-                      </p>
+                      </div>
+
+                      {!isFree && (
+                        <p
+                          className="mt-3 text-2xl font-semibold flex items-baseline gap-2 flex-wrap"
+                          style={{
+                            color: 'var(--ink)',
+                            fontFamily: 'var(--font-poppins),sans-serif',
+                          }}
+                        >
+                          <span>{category.fee}</span>
+                          {discountedFrom && (
+                            <span
+                              className="text-sm font-normal line-through"
+                              style={{ color: 'var(--muted)' }}
+                            >
+                              {discountedFrom}
+                            </span>
+                          )}
+                        </p>
+                      )}
+
                       <p
-                        className="text-sm font-bold mb-5 inline-block px-3 py-1.5 rounded-md self-start"
-                        style={
-                          category.early_payment_date
-                            ? {
-                                color: '#b45309',
-                                background: 'rgba(180,83,9,0.1)',
-                              }
-                            : {
-                                color: 'var(--sky2)',
-                                background: 'rgba(91,185,210,0.12)',
-                              }
-                        }
+                        className="mt-3 mb-6 text-xs"
+                        style={{ color: 'var(--muted)' }}
                       >
                         {category.early_payment_date
                           ? `Early bird ends ${category.early_payment_date}`
                           : `Registration closes ${category.end_date}`}
                       </p>
+
                       <button
                         onClick={() => selectCategory(category)}
-                        className="w-full py-2 rounded-lg text-white font-semibold transition-colors mt-auto"
-                        style={{
-                          background: isFree ? '#16a34a' : 'var(--red)',
-                        }}
+                        className="btn-primary w-full py-2.5 rounded-lg text-white text-sm font-semibold mt-auto"
                       >
                         Register
                       </button>
@@ -1132,40 +1144,62 @@ export default function RegistrationPage() {
           </div>
         ) : (
           /* Registration form */
-          <div className="bg-white rounded-xl shadow overflow-hidden">
+          <div className="panel overflow-hidden">
             {formGroups.length > 1 && (
               <div
-                className="px-6 py-4 border-b flex gap-2 overflow-x-auto"
-                style={{
-                  background: 'var(--light)',
-                  borderColor: 'var(--border)',
-                }}
+                className="px-6 border-b flex gap-6 overflow-x-auto"
+                style={{ borderColor: 'var(--border)' }}
               >
-                {formGroups.map((group, index) => (
-                  <button
-                    key={group.group.id}
-                    onClick={() => {
-                      if (index < currentStep) setCurrentStep(index);
-                    }}
-                    className="flex-1 text-center px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors"
-                    style={{
-                      background:
-                        index === currentStep
-                          ? 'var(--red)'
-                          : index < currentStep
-                            ? 'rgba(198,27,17,0.12)'
-                            : '#e5e7eb',
-                      color:
-                        index === currentStep
-                          ? 'var(--white)'
-                          : index < currentStep
+                {formGroups.map((group, index) => {
+                  const done = index < currentStep;
+                  const current = index === currentStep;
+                  return (
+                    <button
+                      key={group.group.id}
+                      onClick={() => {
+                        if (done) setCurrentStep(index);
+                      }}
+                      className="relative py-4 text-sm whitespace-nowrap transition-colors flex items-center gap-2"
+                      style={{
+                        color: current
+                          ? 'var(--ink)'
+                          : done
+                            ? 'var(--text)'
+                            : 'var(--muted)',
+                        fontWeight: current ? 600 : 400,
+                        cursor: done ? 'pointer' : 'default',
+                      }}
+                    >
+                      <span
+                        className="inline-flex items-center justify-center w-5 h-5 rounded-full text-[11px] font-semibold shrink-0"
+                        style={{
+                          background: current
                             ? 'var(--red)'
-                            : '#6b7280',
-                    }}
-                  >
-                    {group.group.name}
-                  </button>
-                ))}
+                            : done
+                              ? 'rgba(198,27,17,0.12)'
+                              : 'var(--light)',
+                          color: current
+                            ? 'var(--white)'
+                            : done
+                              ? 'var(--red)'
+                              : 'var(--muted)',
+                          border: current
+                            ? 'none'
+                            : '1px solid var(--border)',
+                        }}
+                      >
+                        {index + 1}
+                      </span>
+                      {group.group.name}
+                      {current && (
+                        <span
+                          className="absolute left-0 right-0 bottom-0 h-0.5"
+                          style={{ background: 'var(--red)' }}
+                        />
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             )}
 
@@ -1447,8 +1481,8 @@ export default function RegistrationPage() {
                       : () => setSelectedCategory(null)
                   }
                   disabled={submitting || processingPayment}
-                  className="px-6 py-2 border rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
-                  style={{ borderColor: 'var(--border)' }}
+                  className="px-6 py-2.5 border rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors disabled:opacity-50"
+                  style={{ borderColor: 'var(--border)', color: 'var(--text)' }}
                 >
                   {currentStep > 0 ? 'Previous' : 'Change category'}
                 </button>
@@ -1461,8 +1495,7 @@ export default function RegistrationPage() {
                     type="button"
                     onClick={nextStep}
                     disabled={submitting || processingPayment}
-                    className="px-6 py-2 rounded-lg text-white font-semibold transition-colors disabled:opacity-50"
-                    style={{ background: 'var(--red)' }}
+                    className="btn-primary px-6 py-2.5 rounded-lg text-white text-sm font-semibold disabled:opacity-50"
                   >
                     Next
                   </button>
@@ -1471,8 +1504,7 @@ export default function RegistrationPage() {
                     key="submit"
                     type="submit"
                     disabled={submitting || processingPayment}
-                    className="px-6 py-2 rounded-lg text-white font-semibold transition-colors disabled:opacity-50 flex items-center gap-2"
-                    style={{ background: 'var(--red)' }}
+                    className="btn-primary px-6 py-2.5 rounded-lg text-white text-sm font-semibold disabled:opacity-50 flex items-center gap-2"
                   >
                     {(submitting || processingPayment) && (
                       <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
