@@ -16,6 +16,11 @@ import {
 
 const SMARTEVENT_API = '/api/smartevent';
 
+const PRIVACY_POLICY_URL = 'https://smartevent.rw/privacy-policy';
+const TERMS_OF_USE_URL = 'https://smartevent.rw/terms-of-use';
+const CONSENT_ERROR =
+  'You must accept the Privacy Policy and Terms of Use to continue';
+
 // A plain <select> gets unwieldy past this many options (country lists, for
 // example), so those switch to the searchable variant.
 const SEARCHABLE_THRESHOLD = 12;
@@ -124,6 +129,11 @@ export default function RegistrationPage() {
     orderId: '',
     transactionId: '',
   });
+  // Agreement to SmartEvent's privacy policy and terms, required on every
+  // category. It gates submission only — SmartEvent has no field for it, so
+  // it is not part of the submitted delegate data.
+  const [consentGiven, setConsentGiven] = useState(false);
+  const [consentError, setConsentError] = useState(false);
 
   const loadCategories = useCallback(async (type: 'PHYSICAL' | 'VIRTUAL') => {
     setLoading(true);
@@ -197,6 +207,8 @@ export default function RegistrationPage() {
       setFormGroups(data.data || []);
       setCurrentStep(0);
       setFormValues({});
+      setConsentGiven(false);
+      setConsentError(false);
     } catch {
       setError('Failed to load the registration form. Please try again.');
     }
@@ -374,7 +386,21 @@ export default function RegistrationPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!validateStep()) return;
+
+    // Both checks run before returning so a missing tick and missing fields
+    // are reported together rather than one after the other.
+    const stepValid = validateStep();
+    setConsentError(!consentGiven);
+    if (!consentGiven) {
+      setFormErrors((prev) => [...prev, CONSENT_ERROR]);
+      if (stepValid) {
+        document
+          .querySelector('form')
+          ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+    if (!stepValid || !consentGiven) return;
+
     if (!selectedCategory) {
       setFormErrors(['Please select a category']);
       return;
@@ -1336,6 +1362,75 @@ export default function RegistrationPage() {
                       Preparing your secure payment…
                     </p>
                   </div>
+                </div>
+              )}
+
+              {/* Consent — shown on the final step, since it gates submission. */}
+              {currentStep === formGroups.length - 1 && (
+                <div
+                  className="mt-5 rounded-xl border p-4 sm:p-5"
+                  style={{
+                    borderColor: consentError ? '#ef4444' : 'var(--border)',
+                    background: consentError
+                      ? 'rgba(239,68,68,0.04)'
+                      : 'var(--white)',
+                  }}
+                >
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={consentGiven}
+                      onChange={(e) => {
+                        setConsentGiven(e.target.checked);
+                        if (e.target.checked) {
+                          setConsentError(false);
+                          // Also drop it from the summary banner, otherwise
+                          // that keeps demanding a tick already given.
+                          setFormErrors((prev) =>
+                            prev.filter((msg) => msg !== CONSENT_ERROR),
+                          );
+                        }
+                      }}
+                      className="w-4 h-4 mt-0.5 shrink-0 accent-primary-500"
+                      aria-invalid={consentError}
+                      aria-describedby={
+                        consentError ? 'consent-error' : undefined
+                      }
+                    />
+                    <span className="text-sm" style={{ color: 'var(--text)' }}>
+                      I have read and agree to the{' '}
+                      <a
+                        href={PRIVACY_POLICY_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline font-medium"
+                        style={{ color: 'var(--red)' }}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Privacy Policy
+                      </a>{' '}
+                      and the{' '}
+                      <a
+                        href={TERMS_OF_USE_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline font-medium"
+                        style={{ color: 'var(--red)' }}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Terms of Use
+                      </a>
+                      .<span className="text-red-500 ml-1">*</span>
+                    </span>
+                  </label>
+                  {consentError && (
+                    <p
+                      id="consent-error"
+                      className="mt-2 text-sm text-red-600 pl-7"
+                    >
+                      {CONSENT_ERROR}
+                    </p>
+                  )}
                 </div>
               )}
 
