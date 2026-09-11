@@ -14,6 +14,7 @@ interface SearchableSelectProps {
   onChange: (value: string) => void;
   placeholder?: string;
   hasError?: boolean;
+  describedBy?: string;
 }
 
 // Used for long option lists (country of residence, for example) where a plain
@@ -26,6 +27,7 @@ export default function SearchableSelect({
   onChange,
   placeholder = 'Select an option',
   hasError = false,
+  describedBy,
 }: SearchableSelectProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -56,6 +58,7 @@ export default function SearchableSelect({
       <button
         type="button"
         id={id}
+        aria-describedby={describedBy}
         onClick={() => setOpen((prev) => !prev)}
         className="w-full px-3 py-2 text-sm border rounded-lg text-left flex items-center justify-between gap-2 bg-white focus:ring-2 focus:outline-none"
         style={{

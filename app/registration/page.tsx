@@ -25,6 +25,50 @@ const CONSENT_ERROR =
 // example), so those switch to the searchable variant.
 const SEARCHABLE_THRESHOLD = 12;
 
+// Guidance notes carried over from the printed EAMJA registration form.
+// SmartEvent serves field labels but no help text, so the notes are matched on
+// the label rather than the input code, which differs between categories. Both
+// the printed wording and SmartEvent's current wording are listed as keys so a
+// rename on either side still resolves.
+function hintKey(name: string): string {
+  return name.toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+const FIELD_HINTS = new Map(
+  Object.entries({
+    'Family Name': 'As it appears on your passport',
+    'Last Name': 'As it appears on your passport',
+    'First and Middle Name(s)': 'As they appear on your passport',
+    'First Name': 'As it appears on your passport',
+    'Passport Number': 'For administration purposes only',
+    'ID or Passport Number': 'For administration purposes only',
+    Telephone:
+      'Please provide the full international number, including country and local codes',
+    'Mobile Phone':
+      'Please provide the full international number, including country and local codes',
+    Email:
+      'Please provide a valid email address — all correspondence will be by email',
+    'Guest Title': 'For badge',
+    'Guest Family Name': 'As it appears on the passport',
+    'Guest Lastname': 'As it appears on the passport',
+    'Guest First and Middle Name(s)': 'As they appear on the passport',
+    'Guest Firstname': 'As it appears on the passport',
+    'Guest Passport Number': 'For administration purposes only',
+    'Special Assistance Delegate':
+      'If you or your accompanying guest requires special assistance, please provide the details here',
+  }).map(([label, hint]) => [hintKey(label), hint]),
+);
+
+const GROUP_NOTES = new Map(
+  Object.entries({
+    'ACCOMPANYING GUEST (if applicable)':
+      'Names should be entered as they appear on the passport.',
+    'ARRIVAL / DEPARTURE DATES': 'Required for immigration purposes only.',
+    'Special requirements':
+      'Please specify the nature of any dietary or other special requirements. If special meals need to be prepared, delegates will be charged for all extra costs.',
+  }).map(([group, note]) => [hintKey(group), note]),
+);
+
 function decodeHtml(str: string): string {
   return str
     .replace(/&amp;/g, '&')
@@ -501,6 +545,12 @@ export default function RegistrationPage() {
       <p className="mt-1 text-sm text-red-600">{fieldErrors[input.inputcode]}</p>
     ) : null;
 
+    // Points the control at the guidance note rendered above it, when the
+    // field has one, so screen readers announce it with the label.
+    const describedBy = FIELD_HINTS.has(hintKey(input.nameEnglish))
+      ? `${input.inputcode}-hint`
+      : undefined;
+
     switch (input.inputtype.id) {
       case 2:
         if (options.length > SEARCHABLE_THRESHOLD) {
@@ -508,6 +558,7 @@ export default function RegistrationPage() {
             <>
               <SearchableSelect
                 id={input.inputcode}
+                describedBy={describedBy}
                 options={options.map((opt) => ({
                   value: opt.contentEnglish,
                   label: opt.contentEnglish,
@@ -524,6 +575,7 @@ export default function RegistrationPage() {
           <>
             <select
               id={input.inputcode}
+              aria-describedby={describedBy}
               value={inputValue as string}
               onChange={(e) =>
                 handleInputChange(input.inputcode, e.target.value)
@@ -553,6 +605,7 @@ export default function RegistrationPage() {
             <input
               type="date"
               id={input.inputcode}
+              aria-describedby={describedBy}
               value={inputValue as string}
               onChange={(e) =>
                 handleInputChange(input.inputcode, e.target.value)
@@ -569,6 +622,7 @@ export default function RegistrationPage() {
             <input
               type="email"
               id={input.inputcode}
+              aria-describedby={describedBy}
               value={inputValue as string}
               onChange={(e) =>
                 handleInputChange(input.inputcode, e.target.value)
@@ -585,6 +639,7 @@ export default function RegistrationPage() {
             <input
               type="number"
               id={input.inputcode}
+              aria-describedby={describedBy}
               value={inputValue as string}
               onChange={(e) =>
                 handleInputChange(input.inputcode, e.target.value)
@@ -645,6 +700,7 @@ export default function RegistrationPage() {
             <input
               type="tel"
               id={input.inputcode}
+              aria-describedby={describedBy}
               value={inputValue as string}
               onChange={(e) =>
                 handleInputChange(input.inputcode, e.target.value)
@@ -660,6 +716,7 @@ export default function RegistrationPage() {
           <>
             <textarea
               id={input.inputcode}
+              aria-describedby={describedBy}
               value={inputValue as string}
               onChange={(e) =>
                 handleInputChange(input.inputcode, e.target.value)
@@ -728,6 +785,7 @@ export default function RegistrationPage() {
             <input
               type="text"
               id={input.inputcode}
+              aria-describedby={describedBy}
               value={inputValue as string}
               onChange={(e) =>
                 handleInputChange(input.inputcode, e.target.value)
@@ -1255,6 +1313,14 @@ export default function RegistrationPage() {
                       >
                         {group.group.name}
                       </h3>
+                      {GROUP_NOTES.has(hintKey(group.group.name)) && (
+                        <p
+                          className="-mt-3 text-sm"
+                          style={{ color: 'var(--muted)' }}
+                        >
+                          {GROUP_NOTES.get(hintKey(group.group.name))}
+                        </p>
+                      )}
                       <div
                         className="rounded-xl border bg-white p-4 sm:p-5"
                         style={{ borderColor: 'var(--border)' }}
@@ -1282,6 +1348,19 @@ export default function RegistrationPage() {
                                       </span>
                                     )}
                                   </label>
+                                )}
+                                {FIELD_HINTS.has(
+                                  hintKey(input.nameEnglish),
+                                ) && (
+                                  <p
+                                    id={`${input.inputcode}-hint`}
+                                    className="-mt-1 mb-1.5 text-xs leading-snug"
+                                    style={{ color: 'var(--muted)' }}
+                                  >
+                                    {FIELD_HINTS.get(
+                                      hintKey(input.nameEnglish),
+                                    )}
+                                  </p>
                                 )}
                                 {renderInput(input, options, value)}
                               </div>
