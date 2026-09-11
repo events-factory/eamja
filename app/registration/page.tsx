@@ -179,19 +179,70 @@ export default function RegistrationPage() {
   const [consentGiven, setConsentGiven] = useState(false);
   const [consentError, setConsentError] = useState(false);
 
-  const loadCategories = useCallback(async (type: 'PHYSICAL' | 'VIRTUAL') => {
-    setLoading(true);
-    try {
-      const data = await smartEventJson<{ data: RegistrationCategory[] }>(
-        '/Display-Registration-Categories',
-        { attendence: type, operation: 'get-categories' },
-      );
-      setCategories(data.data || []);
-    } catch {
-      setError('Failed to load registration categories. Please try again.');
-    }
-    setLoading(false);
-  }, []);
+  // `attendance` is passed in rather than read from state because the
+  // auto-select below runs in the same tick as setAttendanceType, before the
+  // state has settled.
+  const selectCategory = useCallback(
+    async (
+      category: RegistrationCategory,
+      attendance: 'PHYSICAL' | 'VIRTUAL',
+    ) => {
+      setSelectedCategory(category);
+      setLoading(true);
+      const needsPayment = requiresPayment(category.fee);
+      setPaymentRequired(needsPayment);
+      if (needsPayment) {
+        setPaymentData((prev) => ({
+          ...prev,
+          orderId: `ORD-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
+        }));
+      }
+      try {
+        const data = await smartEventJson<{ data: FormInputGroup[] }>(
+          '/Display-Categories-Form-Inputs',
+          {
+            category: category.id,
+            attendence: attendance,
+            operation: 'get-form-inputs',
+          },
+        );
+        setFormGroups(data.data || []);
+        setCurrentStep(0);
+        setFormValues({});
+        setConsentGiven(false);
+        setConsentError(false);
+      } catch {
+        setError('Failed to load the registration form. Please try again.');
+      }
+      setLoading(false);
+    },
+    [],
+  );
+
+  const loadCategories = useCallback(
+    async (type: 'PHYSICAL' | 'VIRTUAL') => {
+      setLoading(true);
+      try {
+        const data = await smartEventJson<{ data: RegistrationCategory[] }>(
+          '/Display-Registration-Categories',
+          { attendence: type, operation: 'get-categories' },
+        );
+        const list = data.data || [];
+        setCategories(list);
+        // A single category leaves nothing to choose, so its form opens
+        // straight away — selectCategory clears the loading state itself,
+        // which keeps it one uninterrupted spinner rather than two.
+        if (list.length === 1) {
+          await selectCategory(list[0], type);
+          return;
+        }
+      } catch {
+        setError('Failed to load registration categories. Please try again.');
+      }
+      setLoading(false);
+    },
+    [selectCategory],
+  );
 
   // A non-hybrid event has only one possible attendance type, so its
   // categories are fetched straight away and the chooser is skipped.
@@ -226,37 +277,6 @@ export default function RegistrationPage() {
   async function selectAttendance(type: 'PHYSICAL' | 'VIRTUAL') {
     setAttendanceType(type);
     await loadCategories(type);
-  }
-
-  async function selectCategory(category: RegistrationCategory) {
-    setSelectedCategory(category);
-    setLoading(true);
-    const needsPayment = requiresPayment(category.fee);
-    setPaymentRequired(needsPayment);
-    if (needsPayment) {
-      setPaymentData((prev) => ({
-        ...prev,
-        orderId: `ORD-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
-      }));
-    }
-    try {
-      const data = await smartEventJson<{ data: FormInputGroup[] }>(
-        '/Display-Categories-Form-Inputs',
-        {
-          category: category.id,
-          attendence: attendanceType!,
-          operation: 'get-form-inputs',
-        },
-      );
-      setFormGroups(data.data || []);
-      setCurrentStep(0);
-      setFormValues({});
-      setConsentGiven(false);
-      setConsentError(false);
-    } catch {
-      setError('Failed to load the registration form. Please try again.');
-    }
-    setLoading(false);
   }
 
   const validateStep = useCallback(() => {
@@ -1189,7 +1209,9 @@ export default function RegistrationPage() {
                       </p>
 
                       <button
-                        onClick={() => selectCategory(category)}
+                        onClick={() =>
+                          selectCategory(category, attendanceType!)
+                        }
                         className="btn-primary w-full py-2.5 rounded-lg text-white text-sm font-semibold mt-auto"
                       >
                         Register
@@ -1552,19 +1574,28 @@ export default function RegistrationPage() {
                 className="flex justify-between mt-8 pt-6 border-t"
                 style={{ borderColor: 'var(--border)' }}
               >
-                <button
-                  type="button"
-                  onClick={
-                    currentStep > 0
-                      ? prevStep
-                      : () => setSelectedCategory(null)
-                  }
-                  disabled={submitting || processingPayment}
-                  className="px-6 py-2.5 border rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors disabled:opacity-50"
-                  style={{ borderColor: 'var(--border)', color: 'var(--text)' }}
-                >
-                  {currentStep > 0 ? 'Previous' : 'Change category'}
-                </button>
+                {/* With a single category there is nothing to go back to, so
+                    step 0 shows a spacer that keeps Next right-aligned. */}
+                {currentStep === 0 && categories.length < 2 ? (
+                  <span />
+                ) : (
+                  <button
+                    type="button"
+                    onClick={
+                      currentStep > 0
+                        ? prevStep
+                        : () => setSelectedCategory(null)
+                    }
+                    disabled={submitting || processingPayment}
+                    className="px-6 py-2.5 border rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors disabled:opacity-50"
+                    style={{
+                      borderColor: 'var(--border)',
+                      color: 'var(--text)',
+                    }}
+                  >
+                    {currentStep > 0 ? 'Previous' : 'Change category'}
+                  </button>
+                )}
                 {currentStep < formGroups.length - 1 ? (
                   <button
                     // Distinct keys keep React from reusing one DOM node for
