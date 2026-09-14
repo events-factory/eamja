@@ -885,17 +885,6 @@ export default function RegistrationPage() {
           >
             Register to attend
           </h1>
-          <p
-            style={{
-              color: 'var(--muted)',
-              marginTop: 14,
-              fontSize: 16,
-              maxWidth: 560,
-            }}
-          >
-            Choose your delegate category, complete your details and confirm
-            your place.
-          </p>
         </div>
       </div>
     </header>
