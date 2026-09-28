@@ -927,7 +927,7 @@ export default function RegistrationPage() {
                 Need somewhere to stay? Book a partner hotel at the event rate.
               </p>
               <Link
-                href="/accommodation"
+                href="/accommodation-2"
                 className="btn-primary inline-block px-6 py-2.5 rounded-lg text-white text-sm font-semibold"
               >
                 Book accommodation

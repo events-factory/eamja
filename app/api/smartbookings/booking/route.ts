@@ -1,5 +1,6 @@
+import { randomUUID } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
-import { smartbookingsFetch } from '@/lib/smartbookings';
+import { SMARTBOOKINGS_TOKEN, smartbookingsFetch } from '@/lib/smartbookings';
 import {
   BookingRequest,
   isIsoDate,
@@ -82,13 +83,19 @@ export async function POST(request: NextRequest) {
     book_to: toKigaliEpoch(b.checkout),
     adult: Math.max(1, Number(b.adults) || 1),
     child: Math.max(0, Number(b.children) || 0),
-    token: b.roomToken,
+    // A unique token per booking (the Postman sample uses
+    // "tokenuniqueme4444"); HotelDetail doesn't issue one per room.
+    token: b.roomToken || randomUUID().replace(/-/g, ''),
   };
 
   try {
     const { ok, status, data } = await smartbookingsFetch('Client-BookingForm', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      // Same event token as the HotelsList/HotelDetail URLs.
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: SMARTBOOKINGS_TOKEN,
+      },
       body: JSON.stringify(payload),
     });
     if (!ok) return NextResponse.json(data, { status });
@@ -103,11 +110,14 @@ export async function POST(request: NextRequest) {
         'code',
         'id',
       ]),
-      // Client-Payments-Portal is authorised with a 40-character key. Prefer
-      // one issued with the booking, otherwise fall back to the room token.
-      paymentKey:
-        firstString(raw, ['payment_token', 'paymentkey', 'token', 'key']) ||
-        b.roomToken,
+      // Client-Payments-Portal is authorised with a 40-character key, which
+      // is expected back with the booking.
+      paymentKey: firstString(raw, [
+        'payment_token',
+        'paymentkey',
+        'token',
+        'key',
+      ]),
       message: firstString(raw, ['message', 'msg']),
     });
   } catch (err) {
