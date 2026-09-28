@@ -3,13 +3,13 @@ import Link from 'next/link';
 
 const NAV = [
   { href: '/registration', label: 'Register' },
-  { href: '/accommodation', label: 'Accommodation' },
+  { href: '/accommodation-2', label: 'Accommodation' },
 ];
 
 interface SiteHeaderProps {
   eyebrow: string;
   title: string;
-  active?: '/registration' | '/accommodation';
+  active?: '/registration' | '/accommodation-2';
 }
 
 export default function SiteHeader({ eyebrow, title, active }: SiteHeaderProps) {
