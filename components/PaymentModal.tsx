@@ -12,6 +12,11 @@ interface PaymentModalProps {
   amount: number;
   currency: string;
   categoryName: string;
+  // Heading over categoryName; registration shows "Category".
+  itemLabel?: string;
+  // Checkout.js URL for the gateway that created the session; defaults to the
+  // registration gateway.
+  gatewayScriptUrl?: string;
   customerEmail: string;
   onClose: () => void;
   isOpen: boolean;
@@ -22,6 +27,8 @@ export default function PaymentModal({
   amount,
   currency,
   categoryName,
+  itemLabel = 'Category',
+  gatewayScriptUrl,
   customerEmail,
   onClose,
   isOpen,
@@ -34,7 +41,7 @@ export default function PaymentModal({
 
     if (isOpen && !initialized.current && session.sessionId) {
       initialized.current = true;
-      loadCheckoutScript()
+      loadCheckoutScript(gatewayScriptUrl)
         .then(() => {
           // Checkout.js needs the target node to be in the DOM already.
           setTimeout(() => {
@@ -57,7 +64,7 @@ export default function PaymentModal({
       // Clear the gateway's injected iframe so a re-open starts clean.
       if (container) container.innerHTML = '';
     };
-  }, [isOpen, session.sessionId]);
+  }, [isOpen, session.sessionId, gatewayScriptUrl]);
 
   if (!isOpen) return null;
 
@@ -140,7 +147,7 @@ export default function PaymentModal({
             </div>
             <div>
               <p style={{ color: 'var(--muted)' }} className="mb-1">
-                Category
+                {itemLabel}
               </p>
               <p className="font-semibold" style={{ color: 'var(--text)' }}>
                 {categoryName}

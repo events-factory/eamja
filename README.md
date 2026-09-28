@@ -50,22 +50,22 @@ options (country lists) render as a searchable dropdown.
 
 ## Accommodation
 
-`/accommodation` currently embeds Smartbookings' own event hotel search
-(`mim.smartbookings.rw/Event-Hotels/<event code>/…`) in an iframe, the same way
-`cbff-sme-2026` does. Search, booking and payment all happen inside the frame.
+There are two accommodation pages while one is chosen:
 
-A native booking flow is built in
-[components/HotelBooking.tsx](components/HotelBooking.tsx) but not mounted:
-`Client-HotelsList` and `Client-HotelDetail` return an empty-bodied 500 for the
-EAMJA token (a random token gets a proper 403, so the key is accepted and the
-failure is server-side). Once Smartbookings fix that, render `<HotelBooking />`
-in [app/accommodation/page.tsx](app/accommodation/page.tsx) instead of the
-iframe.
+- `/accommodation` embeds Smartbookings' own event hotel search
+  (`mim.smartbookings.rw/Event-Hotels/<event code>/…`) in an iframe, the same
+  way `cbff-sme-2026` does. Search, booking and payment happen inside the frame.
+- `/accommodation-2` is a native flow,
+  [components/HotelBooking.tsx](components/HotelBooking.tsx): search → hotel →
+  room → booking form, in the site's own design. It opens on the conference
+  dates (28 Nov – 7 Dec 2026).
 
 The native flow uses the Smartbookings client API
-(`https://smartbookings.rw`). The event token (`SMARTBOOKINGS_TOKEN`, default
-in [lib/smartbookings.ts](lib/smartbookings.ts)) scopes results to EAMJA's
-hotels and stays server-side, like the SmartEvent code.
+(`https://smartbookings.rw`). The `{{token}}` in its URLs is the **base64 of
+the event code** (`SMARTBOOKINGS_EVENT_CODE`, default in
+[lib/smartbookings.ts](lib/smartbookings.ts)). The raw code passes the key check
+but then fails with an empty 500. The token stays server-side, like the
+SmartEvent code.
 
 | Step | Browser calls | Smartbookings endpoint |
 | --- | --- | --- |
@@ -83,13 +83,26 @@ Quirks worth knowing:
 - The booking field is spelled `firs_tname`, and is sent that way on purpose.
 - Failed calls come back as an empty-bodied 500, which the routes turn into a
   readable `{ message }`.
-- Response field names aren't documented, so
-  [lib/accommodation.ts](lib/accommodation.ts) normalises hotels and rooms from
-  the names Smartbookings' own pages use (`hotcode`, `star`, `cover`,
-  `room_id`, `token`) plus the obvious alternatives.
-
-The check-in/check-out defaults come from Smartbookings, so the event dates
-are managed in the Smartbookings admin.
+- [lib/accommodation.ts](lib/accommodation.ts) maps the responses onto the
+  page's own types: hotels come from `data.facilities` (`hotelcode`,
+  `hotelname`, `banner`, `minprice`, with `last_page` for paging), and hotel
+  detail has the hotel under `hotel` with `rooms` (`roomcode`, `roomprice`,
+  `amenties`), `payment` and `policies` alongside.
+- `range` (price `min;max`) is required on HotelsList; without it the call
+  fails. Hotel amenities filter as `<searchID>=1` using the keys from
+  `Client-FiltersList` (an unknown key fails the call, so the route only
+  forwards known ones), and `star` takes one rating. Room-amenity filters are
+  ignored by HotelsList, so the page doesn't offer them.
+- Card payment: `Client-Payments-Portal` (authorised with the key returned by
+  the booking) answers with a Mastercard checkout session, which the booking
+  screen opens in the same embedded checkout as registration. Smartbookings'
+  merchant is currently on Mastercard's **test** gateway and will move to live
+  credentials. A session only exists on the gateway that created it, so the pay
+  route looks each session up on the hosts in `SMARTBOOKINGS_GATEWAY_HOSTS`
+  (default: `ap-gateway`, then `test-gateway`) and the page loads Checkout.js
+  from the one that has it. Test and live both work without a config change.
+- HotelDetail doesn't issue a per-room token, so the booking route sends a
+  unique random `token` with each booking.
 
 ## Not included
 
@@ -102,7 +115,9 @@ this flow registers a single delegate.
 | --- | --- |
 | [app/registration/page.tsx](app/registration/page.tsx) | The whole registration flow |
 | [app/accommodation/page.tsx](app/accommodation/page.tsx) | Accommodation page (Smartbookings iframe) |
-| [components/HotelBooking.tsx](components/HotelBooking.tsx) | Native hotel search, rooms and booking (not mounted yet) |
+| [app/accommodation-2/page.tsx](app/accommodation-2/page.tsx) | Accommodation page (native flow) |
+| [components/HotelBooking.tsx](components/HotelBooking.tsx) | Native accommodation flow: list → hotel → booking, kept in the URL |
+| [components/accommodation/](components/accommodation/) | Its screens: search bar and list, date picker, hotel page, booking form, shared UI |
 | [app/api/smartbookings/](app/api/smartbookings/) | Smartbookings routes that add the event token |
 | [app/api/smartevent/[...path]/route.ts](app/api/smartevent/) | Proxy that injects the event code |
 | [app/api/smartevent/Initialize-Payment/route.ts](app/api/smartevent/Initialize-Payment/route.ts) | Opens a card checkout session |

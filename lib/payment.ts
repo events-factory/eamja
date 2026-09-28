@@ -88,12 +88,25 @@ export async function initializePayment(
   }
 }
 
-export async function loadCheckoutScript(): Promise<void> {
-  if (window.Checkout) return Promise.resolve();
+// Checkout.js is tied to the gateway host that created the session, and
+// registration (SmartEvent) and accommodation (Smartbookings) use different
+// hosts. A script from another host is swapped out rather than reused.
+export async function loadCheckoutScript(
+  scriptUrl: string = GATEWAY_SCRIPT_URL,
+): Promise<void> {
+  const loaded = document.querySelector<HTMLScriptElement>(
+    'script[data-checkout-js]',
+  );
+  if (loaded && loaded.src === scriptUrl && window.Checkout) return;
+  if (loaded) {
+    loaded.remove();
+    delete window.Checkout;
+  }
 
   return new Promise((resolve, reject) => {
     const script = document.createElement('script');
-    script.src = GATEWAY_SCRIPT_URL;
+    script.src = scriptUrl;
+    script.setAttribute('data-checkout-js', '');
     script.setAttribute('data-error', 'errorCallback');
     script.setAttribute('data-cancel', 'cancelCallback');
     script.setAttribute('data-complete', 'completeCallback');
@@ -118,6 +131,7 @@ export function showEmbeddedCheckout(
 // callbacks. The embedded checkout itself is rendered by PaymentModal.
 export async function processPayment(
   session: PaymentSession,
+  scriptUrl?: string,
 ): Promise<PaymentResult> {
   return new Promise((resolve) => {
     const cleanup = () => {
@@ -126,7 +140,7 @@ export async function processPayment(
       delete window.cancelCallback;
     };
 
-    loadCheckoutScript()
+    loadCheckoutScript(scriptUrl)
       .then(() => {
         window.completeCallback = (result) => {
           if (result.resultIndicator === session.token) {

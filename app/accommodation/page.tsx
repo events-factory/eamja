@@ -21,7 +21,6 @@ export default function AccommodationPage() {
       <SiteHeader
         eyebrow="Conference Accommodation"
         title="Book your hotel"
-        active="/accommodation"
       />
       <main
         className="flex-1 w-full"
