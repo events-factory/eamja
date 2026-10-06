@@ -95,12 +95,9 @@ Quirks worth knowing:
   ignored by HotelsList, so the page doesn't offer them.
 - Card payment: `Client-Payments-Portal` (authorised with the key returned by
   the booking) answers with a Mastercard checkout session, which the booking
-  screen opens in the same embedded checkout as registration. Smartbookings'
-  merchant is currently on Mastercard's **test** gateway and will move to live
-  credentials. A session only exists on the gateway that created it, so the pay
-  route looks each session up on the hosts in `SMARTBOOKINGS_GATEWAY_HOSTS`
-  (default: `ap-gateway`, then `test-gateway`) and the page loads Checkout.js
-  from the one that has it. Test and live both work without a config change.
+  screen opens in the same embedded checkout as registration. Smartbookings
+  uses live credentials on `ap-gateway.mastercard.com`; Checkout.js is loaded
+  from that host (override with `SMARTBOOKINGS_GATEWAY_HOST`).
 - HotelDetail doesn't issue a per-room token, so the booking route sends a
   unique random `token` with each booking.
 
