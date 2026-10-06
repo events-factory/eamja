@@ -20,6 +20,7 @@ import {
   SupportCard,
   amenityIcon,
   getJson,
+  poppins,
   pillButton,
   stayParams,
 } from './ui';
@@ -50,7 +51,7 @@ function Counter({
         {label}
       </span>
       <span className="flex items-center gap-2 mt-0.5">
-        <span style={{ color: 'var(--red)' }}>
+        <span style={{ color: 'var(--sky2)' }}>
           <Icon name={icon} className="w-[18px] h-[18px]" />
         </span>
         <input
@@ -115,7 +116,7 @@ export function SearchBar({
             className="flex items-center gap-2 mt-0.5 text-[15px] font-medium"
             style={{ color: 'var(--ink)' }}
           >
-            <span style={{ color: 'var(--red)' }}>
+            <span style={{ color: 'var(--sky2)' }}>
               <Icon name="pin" className="w-[18px] h-[18px]" />
             </span>
             {place}
@@ -470,7 +471,7 @@ function HotelCard({ hotel, onOpen }: { hotel: Hotel; onOpen: () => void }) {
             {hotel.category}
           </p>
         )}
-        <h3 className="text-lg font-semibold leading-snug" style={{ color: 'var(--ink)' }}>
+        <h3 className="text-lg font-semibold leading-snug" style={{ ...poppins, color: 'var(--ink)' }}>
           <button type="button" onClick={onOpen} className="text-left hover:underline">
             {hotel.name}
           </button>

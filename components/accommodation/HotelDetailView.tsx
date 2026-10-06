@@ -81,7 +81,7 @@ function scrollToId(id: string) {
 function SectionHeading({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
     <div className="mb-5">
-      <h2 className="text-2xl font-bold" style={{ ...poppins, color: 'var(--ink)' }}>
+      <h2 className="text-xl font-semibold" style={{ ...poppins, color: 'var(--ink)' }}>
         {title}
       </h2>
       {subtitle && (
@@ -190,14 +190,13 @@ function Hero({
         <div className="flex-1 min-w-0 text-white">
           {hotel.stars > 0 && (
             <span
-              className="inline-block text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-md mb-3"
-              style={{ background: 'var(--red)' }}
+              className="inline-block text-xs font-semibold uppercase tracking-wide px-3 py-1.5 rounded-md mb-3 bg-white/20 backdrop-blur"
             >
               {Math.round(hotel.stars)}-star {hotel.category || ''}
             </span>
           )}
           <h1
-            className="text-3xl sm:text-5xl font-extrabold uppercase leading-tight break-words"
+            className="text-3xl sm:text-4xl font-semibold leading-tight break-words"
             style={poppins}
           >
             {hotel.name}
@@ -358,7 +357,7 @@ function ReadMore({ text, lines = 6 }: { text: string; lines?: number }) {
           onClick={() => setExpanded((e) => !e)}
           aria-expanded={expanded}
           className="mt-2 text-sm font-semibold inline-flex items-center gap-1"
-          style={{ color: 'var(--red)' }}
+          style={{ color: 'var(--sky2)' }}
         >
           {expanded ? 'Read less' : 'Read more'}
           <span className={expanded ? 'rotate-180' : ''}>
@@ -389,7 +388,7 @@ function Overview({ hotel }: { hotel: HotelDetail }) {
               <li key={d.label} className="flex gap-3">
                 <span
                   className="w-10 h-10 shrink-0 rounded-full flex items-center justify-center"
-                  style={{ background: 'rgba(198,27,17,0.08)', color: 'var(--red)' }}
+                  style={{ background: 'rgba(91,185,210,0.14)', color: 'var(--sky2)' }}
                 >
                   <Icon name={amenityIcon(d.label)} className="w-5 h-5" />
                 </span>
@@ -428,7 +427,7 @@ function RoomCard({ room, onSelect }: { room: Room; onSelect: () => void }) {
       style={{ borderColor: 'var(--border)' }}
     >
       <div className="flex-1 min-w-0 p-5">
-        <h3 className="text-lg font-semibold" style={{ color: 'var(--ink)' }}>
+        <h3 className="text-lg font-semibold" style={{ ...poppins, color: 'var(--ink)' }}>
           {room.name || 'Room'}
         </h3>
         {meta.length > 0 && (
@@ -456,7 +455,7 @@ function RoomCard({ room, onSelect }: { room: Room; onSelect: () => void }) {
             type="button"
             onClick={() => setExpanded((e) => !e)}
             className="mt-3 text-sm font-medium"
-            style={{ color: 'var(--red)' }}
+            style={{ color: 'var(--sky2)' }}
           >
             {expanded ? 'Show less' : 'and more...'}
           </button>
@@ -678,7 +677,7 @@ function BookYourStay({
         {label}
       </label>
       <div className="relative">
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: 'var(--red)' }}>
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: 'var(--muted)' }}>
           <Icon name="calendar" />
         </span>
         <input
@@ -724,7 +723,10 @@ function BookYourStay({
 
   return (
     <div id="book" className="panel overflow-hidden scroll-mt-6" style={{ borderRadius: 16 }}>
-      <h3 className="px-5 py-4 text-xl font-semibold text-white" style={{ ...poppins, background: 'var(--red)' }}>
+      <h3
+        className="px-5 py-4 text-lg font-semibold border-b"
+        style={{ ...poppins, color: 'var(--ink)', borderColor: 'var(--border)', borderTop: '3px solid var(--red)' }}
+      >
         Book your stay
       </h3>
       <div className="p-5 space-y-4">
@@ -923,7 +925,7 @@ export default function HotelDetailView({
       </div>
 
       {showBar && hotel.priceFrom !== null && (
-        <div className="fixed inset-x-0 bottom-0 z-40 text-white shadow-[0_-8px_24px_rgba(0,0,0,0.15)]" style={{ background: 'var(--red)' }}>
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t shadow-[0_-8px_24px_rgba(0,0,0,0.08)]" style={{ background: 'var(--white)', borderColor: 'var(--border)', color: 'var(--ink)' }}>
           <div className="flex items-center justify-between gap-4 px-6 py-3" style={{ maxWidth: 1160, margin: '0 auto' }}>
             <p className="leading-tight">
               From{' '}
@@ -935,8 +937,7 @@ export default function HotelDetailView({
             <button
               type="button"
               onClick={() => scrollToId('book')}
-              className="rounded-full bg-white px-6 h-11 font-semibold shrink-0"
-              style={{ color: 'var(--red)' }}
+              className={`${pillButton} px-6 h-11 shrink-0`}
             >
               Check Availability
             </button>
