@@ -27,7 +27,7 @@ import {
 
 const TITLES = ['MR', 'MRS', 'MS', 'DR', 'PROF', 'HON'];
 const REASONS = ['Business', 'Leisure'];
-const DEFAULT_PAYMENT_METHODS = ['MasterCard', 'Visa Card', 'Onsite Payment'];
+const DEFAULT_PAYMENT_METHODS = ['MasterCard', 'Visa Card'];
 
 // ---- Booking ---------------------------------------------------------------
 
