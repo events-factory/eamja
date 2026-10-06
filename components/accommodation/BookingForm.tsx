@@ -94,8 +94,11 @@ export default function BookingForm({
     () => countryNames().map((c) => ({ value: c, label: c })),
     [],
   );
-  const paymentMethods = hotel.paymentMethods.length
-    ? hotel.paymentMethods
+  const onlinePaymentMethods = hotel.paymentMethods.filter(
+    (method) => !isOnsite(method),
+  );
+  const paymentMethods = onlinePaymentMethods.length
+    ? onlinePaymentMethods
     : DEFAULT_PAYMENT_METHODS;
 
   const [fields, setFields] = useState<BookingFields>({
@@ -264,7 +267,7 @@ export default function BookingForm({
   );
 
   if (result) {
-    const payOnline = !isOnsite(fields.paymentMethod) && !!result.paymentKey;
+    const payOnline = !!result.paymentKey;
     return (
       <div className="grid lg:grid-cols-[1fr_320px] gap-6 items-start">
         {paymentSession && (
@@ -360,10 +363,6 @@ export default function BookingForm({
                 Card payments are processed securely by Mastercard.
               </p>
             </div>
-          ) : isOnsite(fields.paymentMethod) ? (
-            <p className="text-sm" style={{ color: 'var(--muted)' }}>
-              Payment is settled at the hotel on arrival.
-            </p>
           ) : (
             <p className="text-sm" style={{ color: 'var(--muted)' }}>
               Payment instructions will be sent to {fields.email}.
@@ -554,8 +553,6 @@ export default function BookingForm({
             >
               <option value="">Select</option>
               {paymentMethods.map((m) => (
-                // The value goes back to Smartbookings as it sent it,
-                // including its "Onsite Payement" spelling.
                 <option key={m} value={m}>
                   {m.replace(/Payement/i, 'Payment')}
                 </option>
