@@ -254,7 +254,7 @@ export default function BookingForm({
           </span>
           <span
             className="text-lg font-bold tabular-nums"
-            style={{ color: 'var(--red)' }}
+            style={{ color: 'var(--ink)' }}
           >
             {formatMoney(total, room.currency)}
           </span>
@@ -301,7 +301,7 @@ export default function BookingForm({
             </svg>
           </div>
           <h2
-            className="text-2xl font-bold mb-3"
+            className="text-2xl font-semibold mb-3"
             style={{ ...poppins, color: 'var(--ink)' }}
           >
             {paid
@@ -389,7 +389,7 @@ export default function BookingForm({
     >
       <div className="panel p-6 space-y-6">
         <h2
-          className="text-xl font-bold"
+          className="text-xl font-semibold"
           style={{ ...poppins, color: 'var(--ink)' }}
         >
           Guest details
