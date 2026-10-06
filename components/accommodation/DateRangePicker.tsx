@@ -114,7 +114,7 @@ export default function DateRangePicker({
         aria-haspopup="dialog"
         className="w-full h-full flex items-center gap-3 px-4 py-3 text-left"
       >
-        <span style={{ color: 'var(--red)' }}>
+        <span style={{ color: 'var(--sky2)' }}>
           <Icon name="calendar" className="w-5 h-5" />
         </span>
         <span className="min-w-0">
