@@ -14,7 +14,7 @@ export const poppins = { fontFamily: 'var(--font-poppins),sans-serif' };
 
 // Red pill button used for the primary actions in the mockups.
 export const pillButton =
-  'inline-flex items-center justify-center gap-2 rounded-full text-white font-semibold btn-primary shadow-[0_8px_18px_-8px_rgba(198,27,17,0.7)] disabled:opacity-50';
+  'inline-flex items-center justify-center gap-2 rounded-full text-white font-semibold btn-primary disabled:opacity-50';
 
 export async function getJson<T>(url: string, init?: RequestInit): Promise<T> {
   const res = await fetch(url, init);
@@ -328,7 +328,7 @@ export function CheckCircle({ className = 'w-4 h-4 mt-[3px]' }: { className?: st
       className={`shrink-0 ${className}`}
       viewBox="0 0 24 24"
       fill="none"
-      stroke="var(--red)"
+      stroke="var(--sky2)"
       strokeWidth={2}
       aria-hidden="true"
     >
@@ -354,7 +354,7 @@ export function Stars({
   return (
     <span
       className={`leading-none tracking-tight ${className}`}
-      style={{ color: 'var(--red)' }}
+      style={{ color: 'var(--gold)' }}
       aria-label={`${n} star`}
       role="img"
     >
@@ -471,17 +471,17 @@ export function SupportCard() {
   return (
     <div
       className="rounded-xl p-4 flex gap-3"
-      style={{ background: 'rgba(198,27,17,0.07)' }}
+      style={{ background: 'rgba(91,185,210,0.12)' }}
     >
-      <span style={{ color: 'var(--red)' }}>
+      <span style={{ color: 'var(--sky2)' }}>
         <Icon name="headset" className="w-6 h-6" />
       </span>
       <div className="text-sm leading-relaxed" style={{ color: 'var(--text)' }}>
         For more support or special request, please send an email to{' '}
         <a
           href="mailto:reservation@eventsfactory.rw"
-          className="font-semibold break-all"
-          style={{ color: 'var(--red)' }}
+          className="block font-semibold break-words"
+          style={{ color: 'var(--sky2)' }}
         >
           reservation@eventsfactory.rw
         </a>
