@@ -10,3 +10,9 @@ npm-debug.log*
 *.tsbuildinfo
 next-env.d.ts
 config.bat
+
+# security hardening: env + editor dirs
+!.env.example
+!.env.sample
+!.env.template
+.claude/
