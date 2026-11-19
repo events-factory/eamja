@@ -144,7 +144,53 @@ async function smartEventJson<T>(endpoint: string, body: object): Promise<T> {
   return res.json();
 }
 
+// Registration is closed. Flip this back to false to reopen the form.
+const REGISTRATION_CLOSED = true;
+
 export default function RegistrationPage() {
+  return REGISTRATION_CLOSED ? <RegistrationClosed /> : <RegistrationForm />;
+}
+
+function RegistrationClosed() {
+  return (
+    <div
+      className="min-h-screen flex flex-col"
+      style={{ background: 'var(--light)' }}
+    >
+      <SiteHeader
+        eyebrow="Conference Registration"
+        title="Registration is closed"
+        active="/registration"
+      />
+      <div className="flex-1 flex items-start justify-center px-4 py-12">
+        <div className="panel p-8 text-center max-w-lg w-full">
+          <h2
+            className="text-2xl font-bold mb-4"
+            style={{
+              color: 'var(--ink)',
+              fontFamily: 'var(--font-poppins),sans-serif',
+            }}
+          >
+            Registration has closed
+          </h2>
+          <p className="mb-6" style={{ color: 'var(--muted)' }}>
+            Thank you for your interest. Registration for the conference is no
+            longer open. If you have already registered, your confirmation
+            email has your details.
+          </p>
+          <Link
+            href="/accommodation-2"
+            className="btn-primary inline-block px-6 py-2.5 rounded-lg text-white text-sm font-semibold"
+          >
+            Book accommodation
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RegistrationForm() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [eventType, setEventType] = useState<
