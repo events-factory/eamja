@@ -7,6 +7,8 @@ const REGISTRATION_ENDPOINTS = [
   'Display-Registration-Categories',
   'Display-Categories-Form-Inputs',
   'Register-Delegate',
+  'Registration-Form-Data-Retriever',
+  'Update-Delegate',
 ];
 
 export async function GET(
@@ -23,6 +25,37 @@ export async function POST(
 ) {
   const { path } = await params;
   return proxyRequest(request, path, 'POST');
+}
+
+// Only the update-link request uses PATCH. It takes JSON, so the event code is
+// set on the parsed body instead of a form field.
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ path: string[] }> },
+) {
+  const { path } = await params;
+  const endpoint = path.join('/');
+  if (endpoint !== 'Registration-Update-Link-Request') {
+    return NextResponse.json({ message: 'Not found' }, { status: 404 });
+  }
+  try {
+    const body = await request.json();
+    const response = await fetch(`${SMARTEVENT_API_URL}/${endpoint}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...body, event_code: EVENT_CODE }),
+    });
+    return new NextResponse(await response.text(), {
+      status: response.status,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (error) {
+    console.error('SmartEvent proxy error:', error);
+    return NextResponse.json(
+      { message: 'Proxy error', error: String(error) },
+      { status: 500 },
+    );
+  }
 }
 
 // Proxies browser calls to SmartEvent so the event code never reaches the
