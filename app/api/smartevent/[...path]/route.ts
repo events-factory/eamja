@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { SMARTEVENT_API_URL, EVENT_CODE } from '@/lib/smartevent';
+import { MEDIA_CATEGORY_ID, mediaRegistrationOpen } from '@/lib/media';
 
 // Endpoints that SmartEvent expects as multipart form data, with the event
 // code carried in the body rather than a header.
@@ -86,6 +87,16 @@ async function proxyRequest(
     } else if (isRegistrationEndpoint) {
       try {
         const incomingFormData = await request.clone().formData();
+        if (
+          path.includes('Register-Delegate') &&
+          incomingFormData.get('ticket_id') === String(MEDIA_CATEGORY_ID) &&
+          !mediaRegistrationOpen()
+        ) {
+          return NextResponse.json(
+            { success: false, message: ['Media registration has closed.'] },
+            { status: 403 },
+          );
+        }
         const newFormData = new FormData();
         newFormData.append('event_code', EVENT_CODE);
         incomingFormData.forEach((value, key) => {
